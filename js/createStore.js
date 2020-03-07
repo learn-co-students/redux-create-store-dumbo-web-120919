@@ -1,4 +1,24 @@
-let state;
+function createStore(reducer) {
+  let state;
+
+  // 1) have an action dispatched,
+  // 2) which calls a reducer,
+  // 3) and then render the view
+  function dispatch(action){
+    state = reducer(state, action);
+    render();
+  };
+
+  function getState() {
+    return state
+  }
+
+  return { 
+    dispatch,
+    getState
+  }
+
+}
 
 function reducer(state = { count: 0 }, action) {
   switch (action.type) {
@@ -10,19 +30,16 @@ function reducer(state = { count: 0 }, action) {
   }
 };
 
-function dispatch(action){
-  state = reducer(state, action);
-  render();
-};
+let store = createStore(reducer)
+store.dispatch({ type: '@@INIT' })
 
 function render() {
   let container = document.getElementById('container');
-  container.textContent = state.count;
+  container.textContent = store.getState().count;
 };
 
-dispatch({ type: '@@INIT' })
-let button = document.getElementById('button');
 
+let button = document.getElementById('button');
 button.addEventListener('click', function() {
-    dispatch({ type: 'INCREASE_COUNT' });
+    store.dispatch({ type: 'INCREASE_COUNT' });
 })
